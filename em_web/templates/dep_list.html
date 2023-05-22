@@ -8,7 +8,7 @@
 </head>
 <body>
 <script rel="script" src="{% static 'js/jquery-3.2.1.js' %}"></script>
-<script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'}"></script>
+<script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'%}"></script>
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
@@ -24,6 +24,9 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="/dep_list/">部门管理 <span class="sr-only">(current)</span></a></li>
+
+                <li class="active"><a href="/emp_list/">员工管理 <span class="sr-only">(current)</span></a></li>
+
                 <li><a href="#">Link</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -46,10 +49,32 @@
 
 <div class="container">
     <div style="margin-bottom: 10px">
+        <!---<form method="post" action="/query_dep/">
+            部门名称：<input type="text" name="dep_name" placeholder="请输入部门名称">
+            <a class="btn btn-success" href="/query_dep/" target="_blank">
+            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+            查询
+        </a>
+        </form>-->
+
+
         <a class="btn btn-success" href="/dep_add/" target="_blank">
             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             新建部门
         </a>
+        <div style="float: right; width: 300px">
+    <form method="get">
+        <div class="input-group">
+            <label for="search"></label>
+            <input type="text" id="search" name="search" class="form-control" placeholder="请输入部门名称 支持模糊查询">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+            </span>
+        </div>
+    </form>
+</div>
     </div>
     <div class="panel panel-default">
             <div class="panel-heading">
@@ -78,6 +103,18 @@
                 </tbody>
             </table>
         </div>
+    <!-- bootstrap 分页 -->
+<ul class="pagination">
+    <li><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+    <li class="active"><a href="?page=1">1</a></li>
+    <li><a href="?page=2">2</a></li>
+    <li><a href="?page=3">3</a></li>
+    <li><a href="?page=4">4</a></li>
+    <li><a href="?page=5">5</a></li>
+    <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+</ul>
+
+
 </div>
 
 </body>

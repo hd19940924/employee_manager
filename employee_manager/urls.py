@@ -23,5 +23,7 @@ urlpatterns = [
     path("dep_add/",views.dep_add),
     path("dep_del/",views.dep_del),
     path("dep_update/",views.dep_update),
-    path("emp_list/",views.emp_list)
+    path("emp_list/",views.emp_list),
+    path("query_dep/",views.query_dep),
+    path("login/",views.login),
 ]
