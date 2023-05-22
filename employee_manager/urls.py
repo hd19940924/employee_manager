@@ -26,4 +26,6 @@ urlpatterns = [
     path("emp_list/",views.emp_list),
     path("query_dep/",views.query_dep),
     path("login/",views.login),
+    path("china/",views.china),
+    path("world/",views.world),
 ]

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.db.models import Q
 from django.shortcuts import render, redirect
-
+from django.contrib import  messages
 # from models import models
 from em_web import models
 
@@ -24,10 +24,12 @@ def login(request):
             response.set_cookie('name', name,max_age=60)
             return response
             # return  HttpResponse("登录成功")
+        messages.error(request, '用户名或密码错误！')
         return render(request, "login.html", {"error": "用户名或密码错误！"})
 
 def dep_list(request):
      all_dept=models.Department.objects.all()
+
      return render(request,"dep_list.html",{"all_depts":all_dept})
 
 def query_dep(request):
@@ -68,3 +70,7 @@ def emp_list(request):
         emp.gender=emp.get_gender_display()
         emp.dep_id=models.Department.objects.filter(id=emp.dep_id).first()
     return render(request,"emp_list.html",{"emp_queryset":all_emp_data})
+def china(request):
+    return render(request,"china.html")
+def world(request):
+    return render(request,"world.html")
