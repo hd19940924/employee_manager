@@ -6,6 +6,8 @@ from django.shortcuts import render, redirect
 from django.contrib import  messages
 # from models import models
 from em_web import models
+from django.core.paginator import Paginator
+from django.shortcuts import render
 
 
 # Create your views here.
@@ -74,3 +76,20 @@ def china(request):
     return render(request,"china.html")
 def world(request):
     return render(request,"world.html")
+def my_view(request):
+    my_objects = models.Department.objects.all()
+    paginator = Paginator(my_objects, 2) # 分页，每页显示25条数据
+    page = request.GET.get('page')
+    my_objects = paginator.get_page(page) # 获取指定页数的数据
+    return render(request, 'page.html', {'my_objects': my_objects})
+def my_NewView(request):
+    my_objects = models.Department.objects.all()
+    page_size = request.GET.get('per_page') or 2 # 默认每页显示2条
+    paginator = Paginator(my_objects, page_size)
+    page = request.GET.get('page')
+    my_objects = paginator.get_page(page)
+
+    return render(request, 'my_Newtemplate.html', {
+        'my_objects': my_objects,
+        'page_sizes': [2, 5, 10], # 定义可选的每页条数
+    })

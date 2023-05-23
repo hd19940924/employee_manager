@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from em_web import views
-
+from em_web.views import my_NewView
+app_name='em_web'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("dep_list/",views.dep_list),
@@ -28,4 +29,12 @@ urlpatterns = [
     path("login/",views.login),
     path("china/",views.china),
     path("world/",views.world),
+    path("page/",views.my_view),
+    path("my_NewView/",views.my_NewView),
+    path("my_NewView/<int:page>",views.my_NewView),
+    path('my_NewView/<int:page>/<int:page_size>/', views.my_NewView),
+    path('my-view/', my_NewView, name='my_NewView'),
+    path('my-view/<int:page>/', my_NewView, name='my_NewView'),
+    path('my-view/<int:page>/<int:page_size>/', my_NewView, name='my_NewView'),
+
 ]
