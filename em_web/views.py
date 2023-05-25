@@ -30,6 +30,7 @@ def login(request):
         return render(request, "login.html", {"error": "用户名或密码错误！"})
 
 def dep_list(request):
+     #print(models.Department)
      all_dept=models.Department.objects.all()
 
      return render(request,"dep_list.html",{"all_depts":all_dept})
@@ -57,6 +58,7 @@ def dep_update(request):
     if request.method=="GET":
         update_dep_id=request.GET.get("update_id")
         default_dep= models.Department.objects.filter(id=update_dep_id).first()
+
         return render(request,"dep_update.html",{
             "default_dep":default_dep
         })
@@ -76,6 +78,8 @@ def china(request):
     return render(request,"china.html")
 def world(request):
     return render(request,"world.html")
+def hello(request):
+    return render(request,"hello.html")
 def my_view(request):
     my_objects = models.Department.objects.all()
     paginator = Paginator(my_objects, 2) # 分页，每页显示25条数据
@@ -93,3 +97,41 @@ def my_NewView(request):
         'my_objects': my_objects,
         'page_sizes': [2, 5, 10], # 定义可选的每页条数
     })
+
+
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from em_web.models import detection_collect
+import json
+@csrf_exempt
+def get_search(request):
+    search_list = []
+    type = detection_collect.objects.values_list('type', flat=True)
+    type_list = list(type)
+    type_set = set(type_list)
+    try:
+        for i in type_set:
+            count = type_list.count(i)
+           # print(type(count))
+            # print("the %s has found %d" %(i,type_list.count(i)))
+            tem = {}
+            tem['name'] = i
+            tem['value'] = count
+            search_list.append(tem)
+        print('search_list:---', json.dumps(search_list))
+    except Exception as e:
+        print('e:', e)
+     #HttpResponse(json.dumps(search_list), content_type='application/json')
+    #search=json.dumps(search_list)
+    #print('search:---', search)
+    print(search_list[0]["name"])
+    #print(type(search_list[0]["name"]))
+    return render(request,"echart_test.html",{"search":search_list})
+def Basic_Line_Chart(request):
+
+# 查询出Person对象信息，也就是数据表中的所有数据
+    # 一行数据就是一个对象，一个格子的数据就是一个对象的一个属性值
+    objs = models.Person.objects.all()
+    # locals函数可以将该函数中出现过的所有变量传入到展示页面中，即index.html文件中
+  #  return render(request,'index.html',locals())
+    return render(request,"Basic Line Chart.html",{"objs":objs})

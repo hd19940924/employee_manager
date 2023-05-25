@@ -36,5 +36,8 @@ urlpatterns = [
     path('my-view/', my_NewView, name='my_NewView'),
     path('my-view/<int:page>/', my_NewView, name='my_NewView'),
     path('my-view/<int:page>/<int:page_size>/', my_NewView, name='my_NewView'),
+    path("detection/",views.get_search),
+    path("hello/",views.hello),
+    path("Basic_Line_Chart/",views.Basic_Line_Chart),
 
 ]
