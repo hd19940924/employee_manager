@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hello</title>
+</head>
+<body>
+<div id="main1" style="height: 600px"></div>
+
+</body>
+</html>
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<!--<script src="/static/js/echarts.js"></script>-->
+<script src='{% static "js/echarts.min.js" %}'></script>
+
+    <script>
+        var myChart3 = echarts.init(document.getElementById('main1'));
+
+                        option = {
+  legend: {
+    top: 'bottom'
+  },
+  toolbox: {
+    show: true,
+    feature: {
+      mark: { show: true },
+      dataView: { show: true, readOnly: false },
+      restore: { show: true },
+      saveAsImage: { show: true }
+    }
+  },
+  series: [
+    {
+      name: 'Nightingale Chart',
+      type: 'pie',
+      radius: [50, 250],
+      center: ['50%', '50%'],
+      roseType: 'area',
+      itemStyle: {
+        borderRadius: 8
+      },
+
+                        data:[
+
+
+                       {% for date in search %}
+                       {value: {{ date.value }}, name: '{{ date.name }}'},
+                          //data为后端返回的json数据，例子： {value: 1048, name: 'Search Engine'},
+                       {% endfor %}
+
+
+                          ]
+                    }
+
+                ]
+            };
+
+            {#console.log(data);#}
+            myChart3.setOption(option);
+
+    </script>
+

@@ -2,7 +2,13 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from jinja2 import Environment, FileSystemLoader
 
+def str_filter(value):
+    return str(value)
+
+env = Environment(loader=FileSystemLoader(r'C:\Users\admin\employee_manager\em_web\templates\echart_test.html'))
+env.filters['str'] = str_filter
 
 def main():
     """Run administrative tasks."""

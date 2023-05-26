@@ -39,5 +39,6 @@ urlpatterns = [
     path("detection/",views.get_search),
     path("hello/",views.hello),
     path("Basic_Line_Chart/",views.Basic_Line_Chart),
+    path("line_stack/",views.line_stack),
 
 ]

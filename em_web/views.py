@@ -135,3 +135,5 @@ def Basic_Line_Chart(request):
     # locals函数可以将该函数中出现过的所有变量传入到展示页面中，即index.html文件中
   #  return render(request,'index.html',locals())
     return render(request,"Basic Line Chart.html",{"objs":objs})
+def line_stack(request):
+    return render(request,"line-stack.html")
