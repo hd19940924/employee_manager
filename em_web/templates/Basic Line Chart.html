@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的第一个django展示页面</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <script src="/static/js/echarts.min.js"></script>
+</head>
+<body>
+<h1>学生成绩简单可视化</h1>
+<div id="chart"></div>
+
+<script>
+    {#初始化 echarts 对象#}
+    var mychart = echarts.init(document.getElementById('chart'));
+    {#可视化展示选项#}
+    var series_data = [];
+    var xAxis_data = [];
+
+    {#使用循环，依次将数据库需要展示的数据添加到刚才声明的数组中#}
+    {% for stu in objs %}
+        series_data.push({{ stu.score }})
+        xAxis_data.push("{{ stu.name}}")
+    {% endfor %}
+    var option = {
+        xAxis: {
+            type: 'category',
+            data: xAxis_data
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data:  series_data,
+            type: 'line'
+        }]
+    };
+    {#将 echarts对象与展示选项结合起来#}
+    mychart.setOption(option);
+
+</script>
+</body>
+</html>
+

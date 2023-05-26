@@ -1,6 +1,5 @@
 import datetime
 from datetime import datetime
-
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib import  messages
@@ -8,8 +7,9 @@ from django.contrib import  messages
 from em_web import models
 from django.core.paginator import Paginator
 from django.shortcuts import render
-
-
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 # Create your views here.
 def login(request):
     if (request.method == "GET"):
@@ -28,31 +28,66 @@ def login(request):
             # return  HttpResponse("登录成功")
         messages.error(request, '用户名或密码错误！')
         return render(request, "login.html", {"error": "用户名或密码错误！"})
-
+def login_new(request):
+    if (request.method == "GET"):
+        return render(request, "login.html")
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)  # 登录
+            # if username == 'admin' and password == 'admin123':
+            # return HttpResponse("Login Success!")
+            # return HttpResponseRedirect('/event_manage/')
+            #response.set_cookie('user', username, 3600) # 添加浏览器Cookie
+            request.session['user'] = username  # 将session信息添加到浏览器
+            response = HttpResponseRedirect('/dep_list')
+            response.set_cookie('user', username, 3600)
+            return response
+        else:
+            return render(request, 'login.html', {'error': 'username or password error'})
+@login_required
 def dep_list(request):
+    search = request.GET.get("search")
+    print(search)
+    if search==None:
      #print(models.Department)
-     all_dept=models.Department.objects.all()
-
-     return render(request,"dep_list.html",{"all_depts":all_dept})
-
+     #print(request.user.is_authenticated())
+          all_dept=models.Department.objects.all().order_by("id")
+          return render(request,"dep_list.html",{"all_depts":all_dept})
+    else:
+        all_dept = models.Department.objects.filter(dep_name__contains=search)
+        return render(request, "dep_list.html", {"all_depts": all_dept,"search_data": search})
+def department_list(request):
+    departments = models.Department.objects.all()
+    context = {'departments': departments}
+    return render(request, 'dep_new_list.html', context)
+def dep_search(request):
+    search=request.GET.get("search")
+    all_dept=models.Department.objects.filter(dep_name=search)
+    return render(request, "dep_list.html", {"all_depts": all_dept,"search_data": search})
+@login_required
 def query_dep(request):
     dep_name=request.GET.get("dep_name")
     dep=models.Department.objects.filter(Q(dep_name=dep_name))
     return render(request,"dep_list.html",{"all_depts":dep})
-
+@login_required
 def dep_add(request):
-
+        print(request.user.is_authenticated)
         if request.method == "GET":
            return render(request,"dep_add.html")
         elif request.method == "POST":
             dep_name = request.POST.get("dep_name")
             models.Department.objects.create(dep_name=dep_name)
             return redirect("http://127.0.0.1:8000/dep_list/")
+@login_required
 def dep_del(request):
     del_id=request.GET.get("del_id")
     models.Department.objects.filter(id=del_id).delete()
+    #messages.success(request,' 已被成功删除！')
     return  redirect("/dep_list/")
-
+@login_required
 def dep_update(request):
     update_dep_id= None
     if request.method=="GET":
@@ -67,13 +102,41 @@ def dep_update(request):
         new_dep_name= request.POST.get("new_dep_name")
         models.Department.objects.filter(id=new_dep_id).update(dep_name=new_dep_name)
         return redirect("/dep_list/")
+@login_required
 def emp_list(request):
     all_emp_data=models.Employee.objects.all()
     for emp in all_emp_data:
         emp.create_time=emp.create_time.strftime("%Y-%m-%d")
         emp.gender=emp.get_gender_display()
         emp.dep_id=models.Department.objects.filter(id=emp.dep_id).first()
+    #all_emp_data=all_emp_data.order_by("age")
+
     return render(request,"emp_list.html",{"emp_queryset":all_emp_data})
+
+def emp_list_search(request):
+    search = request.GET.get("search")
+    print(search)
+    if search == None:
+        # print(models.Department)
+        # print(request.user.is_authenticated())
+
+        all_emp_data = models.Employee.objects.all().order_by('-create_time')
+        page_size = request.GET.get('per_page') or 10  # 默认每页显示2条
+        paginator = Paginator(all_emp_data, page_size)
+        page = request.GET.get('page')
+        all_emp_data=paginator.get_page(page)
+        for emp in all_emp_data:
+            emp.create_time = emp.create_time.strftime("%Y-%m-%d")
+            emp.gender = emp.get_gender_display()
+            emp.dep_id = models.Department.objects.filter(id=emp.dep_id).first()
+        return render(request, "emp_list.html", {"emp_queryset": all_emp_data, 'page_sizes': [2, 5, 10],}) # 定义可选的每页条数})
+    else:
+        all_emp_data = models.Employee.objects.filter(name__contains=search)
+        for emp in all_emp_data:
+            emp.create_time = emp.create_time.strftime("%Y-%m-%d")
+            emp.gender = emp.get_gender_display()
+            emp.dep_id = models.Department.objects.filter(id=emp.dep_id).first()
+        return render(request, "emp_list.html", {"emp_queryset": all_emp_data})
 def china(request):
     return render(request,"china.html")
 def world(request):
@@ -82,24 +145,24 @@ def hello(request):
     return render(request,"hello.html")
 def my_view(request):
     my_objects = models.Department.objects.all()
-    paginator = Paginator(my_objects, 2) # 分页，每页显示25条数据
+    paginator = Paginator(my_objects, 2) # 分页，每页显示2条数据
     page = request.GET.get('page')
     my_objects = paginator.get_page(page) # 获取指定页数的数据
     return render(request, 'page.html', {'my_objects': my_objects})
+@login_required
 def my_NewView(request):
     my_objects = models.Department.objects.all()
     page_size = request.GET.get('per_page') or 2 # 默认每页显示2条
     paginator = Paginator(my_objects, page_size)
     page = request.GET.get('page')
     my_objects = paginator.get_page(page)
-
     return render(request, 'my_Newtemplate.html', {
         'my_objects': my_objects,
         'page_sizes': [2, 5, 10], # 定义可选的每页条数
     })
 
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from em_web.models import detection_collect
 import json
@@ -128,7 +191,7 @@ def get_search(request):
     #print(type(search_list[0]["name"]))
     return render(request,"echart_test.html",{"search":search_list})
 def Basic_Line_Chart(request):
-
+    print(request.user.is_authenticated)
 # 查询出Person对象信息，也就是数据表中的所有数据
     # 一行数据就是一个对象，一个格子的数据就是一个对象的一个属性值
     objs = models.Person.objects.all()
@@ -137,3 +200,8 @@ def Basic_Line_Chart(request):
     return render(request,"Basic Line Chart.html",{"objs":objs})
 def line_stack(request):
     return render(request,"line-stack.html")
+def index(request):
+    return render(request, "login.html")
+def logout(request):
+    auth.logout(request)
+    return redirect("/index")

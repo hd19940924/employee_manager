@@ -40,5 +40,12 @@ urlpatterns = [
     path("hello/",views.hello),
     path("Basic_Line_Chart/",views.Basic_Line_Chart),
     path("line_stack/",views.line_stack),
+    path('accounts/login/', views.index),
+    path("index/", views.index),
+    path("login_new/", views.login_new),
+    path("logout/",views.logout),
+    path("dep_search/",views.dep_search),
+    path("emp_list_search/",views.emp_list_search),
+    path("department_list/",views.department_list),
 
 ]

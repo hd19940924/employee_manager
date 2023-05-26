@@ -5,10 +5,31 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
 </head>
 <body>
 <script rel="script" src="{% static 'js/jquery-3.2.1.js' %}"></script>
 <script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'%}"></script>
+<script rel="script" src='{% static "js/toastr.min.js" %}'></script>
+<script>
+function showDeleteConfirmation(dep_id, dep_name) {
+
+    if (confirm('您确定要删除 ' + dep_name + ' 吗？')) {
+        window.location.href = '/dep_del/?del_id=' + dep_id;
+        toastr.success(dep_name + ' 已被成功删除！');
+    } else {
+        toastr.error('取消删除 ' + dep_name + '！');
+    }
+     // 进行样式修改
+    toastr.options.positionClass = 'toast-top-left';
+    //toastr.options.background = '#28a745';
+    //document.querySelectorAll('.toast').forEach(function (el) {
+      //  el.style.color = '#fff';
+    //});
+
+}
+</script>
+
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
@@ -25,7 +46,7 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="/dep_list/">部门管理 <span class="sr-only">(current)</span></a></li>
 
-                <li class="active"><a href="/emp_list/">员工管理 <span class="sr-only">(current)</span></a></li>
+                <li class="active"><a href="/emp_list_search/">员工管理 <span class="sr-only">(current)</span></a></li>
 
                 <li><a href="#">Link</a></li>
             </ul>
@@ -35,7 +56,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Dropdown <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
+                        <li><a href="/logout">退出系统</a></li>
                         <li><a href="#">Another action</a></li>
                         <li><a href="#">Something else here</a></li>
                         <li role="separator" class="divider"></li>
@@ -46,7 +67,6 @@
         </div>
     </div>
 </nav>
-
 <div class="container">
     <div style="margin-bottom: 10px">
         <!---<form method="post" action="/query_dep/">
@@ -63,10 +83,10 @@
             新建部门
         </a>
         <div style="float: right; width: 300px">
-    <form method="get">
+    <form method="get" action="">
         <div class="input-group">
             <label for="search"></label>
-            <input type="text" id="search" name="search" class="form-control" placeholder="请输入部门名称 支持模糊查询">
+            <input type="text" id="search" name="search" class="form-control" value="{{ search_data }}" placeholder="请输入部门名称 支持模糊查询">
             <span class="input-group-btn">
                 <button class="btn btn-default" type="submit">
                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -86,6 +106,7 @@
                 <tr>
                     <th>部门ID</th>
                     <th>部门名称</th>
+                    <th>部门人数</th>
                     <th>操作</th>
                 </tr>
                 </thead>
@@ -94,9 +115,13 @@
                 <tr>
                     <td>{{dep.id}}</td>
                     <td>{{dep.dep_name}}</td>
+                    <td></td>
                     <td>
                         <a class="btn btn-primary btn-xs" href="/dep_update/?update_id={{ dep.id}}">编辑</a>
-                        <a class="btn btn-danger btn-xs" href="/dep_del/?del_id={{dep.id}}">删除</a>
+                       <!-- <a class="btn btn-danger btn-xs" href="/dep_del/?del_id={{dep.id}}">删除</a>-->
+                       <!-- <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation({{dep.id}})">删除</a>-->
+                       <!-- <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation({{dep.id}})">删除</a>-->
+                        <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation({{dep.id}}, '{{dep.dep_name}}')">删除</a>
                     </td>
                 </tr>
                {% endfor %}
@@ -118,4 +143,5 @@
 </div>
 
 </body>
+
 </html>

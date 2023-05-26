@@ -3,8 +3,10 @@ from django.db import models
 # Create your models here.
 class Department(models.Model):
     dep_name=models.CharField(verbose_name="部门名称",max_length=32)
-   # def __str__(self):
-       # return self.dep_name
+    def __str__(self):
+       return self.dep_name
+    def employee_count(self):
+        return Employee.objects.filter(dep=self).count()
 
 class Employee(models.Model):
     name=models.CharField(verbose_name="员工姓名",max_length=16)
@@ -17,7 +19,7 @@ class Employee(models.Model):
         (2,"女"),
     )
     gender= models.SmallIntegerField(verbose_name="员工性别",choices=gender_choices)
-    dep=models.ForeignKey(to="Department",to_field="id",on_delete=models.CASCADE)
+    dep=models.ForeignKey(to="Department",to_field="id",related_name='employees',on_delete=models.CASCADE)
 class detection_collect(models.Model):
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=30, null=True)

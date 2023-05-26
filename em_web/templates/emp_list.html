@@ -50,7 +50,21 @@
             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             新增员工
         </a>
+         <div style="float: right; width: 300px">
+    <form method="get" action="">
+        <div class="input-group">
+            <label for="search"></label>
+            <input type="text" id="search" name="search" class="form-control" placeholder="请输入员工名称 支持模糊查询">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+            </span>
+        </div>
+    </form>
+</div>
     </div>
+
     <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
@@ -90,7 +104,91 @@
                 </tbody>
             </table>
         </div>
-</div>
+<div class="pagination">
+    <span class="step-links">
+         {% if emp_queryset.has_previous %}
+            <a href="?page=1&per_page={{my_objects.paginator.per_page}}">&laquo; first</a>
+            <a href="?page={{ my_objects.previous_page_number }}&per_page={{my_objects.paginator.per_page}}">&lsaquo; previous</a>
+        {% endif %}
 
+        <span class="current-page">
+            Page {{ emp_queryset.number }} of {{ emp_queryset.paginator.num_pages }}
+        </span>
+
+        {% if emp_queryset.has_next %}
+            <a href="?page={{ emp_queryset.next_page_number }}&per_page={{emp_queryset.paginator.per_page}}">next &rsaquo;</a>
+            <a href="?page={{ emp_queryset.paginator.num_pages }}&per_page={{emp_queryset.paginator.per_page}}">last &raquo;</a>
+        {% endif %}
+    </span>
+
+    <span class="page-sizes">
+        <span class="total-count">
+            Total: {{ emp_queryset.paginator.count }}
+        </span>
+
+       {% if emp_queryset.paginator.count >= emp_queryset.paginator.per_page %}
+            <span class="page-size-select">
+                Per page:
+                <select name="page_size" onchange="window.location.href='?page=1&per_page=' + this.value;">
+                    {% for size in page_sizes %}
+                        {% if size == emp_queryset.paginator.per_page %}
+                            <option value="{{ size }}" selected>{{ size }}</option>
+                        {% else %}
+                            <option value="{{ size }}">{{ size }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </span>
+        {% endif %}
+    </span>
+</div>
 </body>
+<style>
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0;
+  font-size: 0.9rem;
+}
+
+.pagination .step-links,
+.pagination .page-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pagination .step-links a,
+.pagination .step-links span.current-page,
+.pagination .page-sizes span.total-count {
+  display: inline-block;
+  margin: 0 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 2px;
+  text-decoration: none;
+}
+
+.pagination .step-links a:hover,
+.pagination .step-links span.current-page,
+.pagination .page-sizes span.total-count {
+  background-color: #333;
+  color: #fff;
+}
+
+.pagination .page-sizes .page-size-select {
+  margin-left: 1rem;
+}
+
+.pagination .page-sizes select {
+  margin-left: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 2px;
+  border: none;
+  font-size: 0.9rem;
+}</style>
 </html>
