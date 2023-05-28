@@ -40,5 +40,8 @@ urlpatterns = [
     path("hello/",views.hello),
     path("Basic_Line_Chart/",views.Basic_Line_Chart),
     path("line_stack/",views.line_stack),
+    path('accounts/login/', views.index),
+    path("index/",views.index),
+    path("login_new/",views.login_new),
 
 ]
