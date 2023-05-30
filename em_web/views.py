@@ -60,9 +60,18 @@ def dep_list(request):
         all_dept = models.Department.objects.filter(dep_name__contains=search)
         return render(request, "dep_list.html", {"all_depts": all_dept,"search_data": search})
 def department_list(request):
-    departments = models.Department.objects.all()
-    context = {'departments': departments}
-    return render(request, 'dep_new_list.html', context)
+    search = request.GET.get("search")
+    print(search)
+    if search == None:
+       departments = models.Department.objects.all()
+       context = {'departments': departments}
+       return render(request, 'dep_new_list.html', context)
+    else:
+        departments=models.Department.objects.filter(dep_name__contains=search)
+        context = {'departments': departments,
+                   "search_data": search}
+        return render(request, 'dep_new_list.html', context)
+
 def dep_search(request):
     search=request.GET.get("search")
     all_dept=models.Department.objects.filter(dep_name=search)
@@ -200,6 +209,11 @@ def Basic_Line_Chart(request):
     return render(request,"Basic Line Chart.html",{"objs":objs})
 def line_stack(request):
     return render(request,"line-stack.html")
+def index(request):
+    return render(request, "login.html")
+def logout(request):
+    auth.logout(request)
+    return redirect("/index")
 def index(request):
     return render(request, "login.html")
 def logout(request):
