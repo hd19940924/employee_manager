@@ -219,3 +219,39 @@ def index(request):
 def logout(request):
     auth.logout(request)
     return redirect("/index")
+from django.http import JsonResponse
+
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from .models import Department
+from django.http import JsonResponse
+
+def delete_department(request, department_id):
+    department = models.Department.objects.get(id=department_id)
+    department.delete()
+    return JsonResponse({'status': 'success'})
+def dep_list_ajax(request):
+    departments=models.Department.objects.all()
+    return render(request,"dep_list_ajax.html",{"departments":departments})
+def delete_department(request, department_id):
+    # 首先找到要删除的部门对象
+    department = get_object_or_404(Department, id=department_id)
+
+    # 删除部门对象
+    department.delete()
+
+    # 返回响应
+    return JsonResponse({'success': True})
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+
+def delete_department1(request):
+    # 获取前端发送来的部门 ID
+    department_id = request.POST.get('department_id')
+    # 根据部门 ID 获取 Department 对象
+    department = get_object_or_404(Department, id=department_id)
+
+    # 删除部门，注意这里使用 delete 方法实际删除记录
+    department.delete()
+    # 返回成功删除的状态信息
+    return JsonResponse({'success': True})

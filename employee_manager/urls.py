@@ -47,5 +47,18 @@ urlpatterns = [
     path("dep_search/",views.dep_search),
     path("emp_list_search/",views.emp_list_search),
     path("department_list/",views.department_list),
-
+    path("dep_list_ajax/",views.dep_list_ajax),
+    path("department/<int:department_id>/delete/",views.delete_department),
+    path('dep_list_ajax/department/<int:department_id>/delete/', views.delete_department),
+    #path('delete_department/<int:department_id>/', views.delete_department, name='delete_department'),
+    path('delete_department/<int:department_id>/', views.delete_department, name='delete_department'),
+    path('delete_department/', views.delete_department1, name='delete_department'),
 ]
+
+
+
+
+
+
+
+
