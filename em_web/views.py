@@ -171,7 +171,7 @@ def my_NewView(request):
     })
 
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 from em_web.models import detection_collect
 import json
@@ -255,3 +255,70 @@ def delete_department1(request):
     department.delete()
     # 返回成功删除的状态信息
     return JsonResponse({'success': True})
+import json
+@csrf_exempt
+def login1(request):
+
+    if request.method == 'GET':
+        return render(request,'ajax_text.html')
+    else:
+        uname = request.POST.get('uname')
+        print(uname)
+        pwd = request.POST.get('pwd')
+        if uname == 'test' and pwd == '123':
+            # return redirect('app03:show_book')
+            ret = {'code':0,'success':'/app03/show_book/'}
+            return HttpResponse(json.dumps(ret))
+        else:
+            # return redirect('app03:login')
+            ret = {'code':1,'fail':'用户名或密码错误！！'}  #只需要改这里就行，提示一句话就行。
+            return HttpResponse(json.dumps(ret))
+def ajax_test(request):
+    return render(request,'ajax.html')
+
+def product(request):
+    if request.method == "GET":
+        a1 = request.GET.get('a1')
+        a2 = request.GET.get('a2')
+        a = int(a1)*int(a2)
+        print(type(a))
+        return HttpResponse(a)
+def index_new(request):
+    if request.method=="POST":
+        i1=request.POST.get("i1")
+        i2=request.POST.get("i2")
+        i3=int(i1)+int(i2)
+        return HttpResponse(i3)
+    return render(request,"index.html")
+@csrf_exempt
+def index_json(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        i1 = float(data['i1'])
+        i2 = float(data['i2'])
+        result = i1 + i2
+        return HttpResponse(result, content_type="application/json")
+    return render(request, "index_new.html")
+from django.http import HttpRequest
+@csrf_exempt
+def login_new_ajax(request):
+    dic = {'status':None,'msg':None}  # 设置dic保存状态码及登入状态信息
+    # 如果是ajax请求
+    #if request.is_ajax():
+    #if isinstance(request, HttpRequest) and request.is_ajax():
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        name = request.POST.get('name')  # 获取用户名
+        pwd = request.POST.get('pwd')    # 获取密码
+        user_obj = models.LoginUser.objects.filter(name=name,pwd=pwd).first()  # 拿到对象
+        if user_obj:
+            dic['status'] = 200  # 存在状态码设置成200
+        else:
+            dic['status'] = 201
+            dic['msg'] = '用户名或密码错误'
+
+        # 方式一 : 直接使用JsonResponse
+        return JsonResponse(dic)  # 将登入状态dic返回给前端ajax
+        # 方式二 : 手动转json格式
+        # import json
+        # return HttpResponse(json.dumps(dic))
+    return render(request,'login_new.html')  # get请求展示login页面

@@ -18,13 +18,14 @@ function showDeleteConfirmation(dep_id, dep_name) {
         window.location.href = '/dep_del/?del_id=' + dep_id;
         toastr.success(dep_name + ' 已被成功删除！');
     } else {
+        toastr.options.positionClass = 'toast-top-center';
         toastr.error('取消删除 ' + dep_name + '！');
     }
      // 进行样式修改
    // toastr.options.positionClass = 'toast-top-left';
     //toastr.options.background = '#28a745';
-    //document.querySelectorAll('.toast').forEach(function (el) {
-      //  el.style.color = '#fff';
+   // document.querySelectorAll('.toast').forEach(function (el) {
+        el.style.color = '#fff';
     //});
 
 }
@@ -111,17 +112,19 @@ function showDeleteConfirmation(dep_id, dep_name) {
                 </tr>
                 </thead>
                 <tbody>
-                {% for dep in all_depts %}
-                <tr>
-                    <td>{{dep.id}}</td>
-                    <td>{{dep.dep_name}}</td>
-                    <td></td>
-                    <td>
-                        <a class="btn btn-primary btn-xs" href="/dep_update/?update_id={{ dep.id}}">编辑</a>
+                {% for department in departments %}
+            <tr>
+                <td>{{ department.id }}</td>
+                <td>{{ department.dep_name }}</td>
+                <td>{{ department.employee_count }}</td>
+                <td>
+                        <a class="btn btn-primary btn-xs" href="/dep_update/?update_id={{ department.id}}">编辑</a>
                        <!-- <a class="btn btn-danger btn-xs" href="/dep_del/?del_id={{dep.id}}">删除</a>-->
                        <!-- <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation({{dep.id}})">删除</a>-->
-                       <!-- <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation({{dep.id}})">删除</a>-->
-                        <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation({{dep.id}}, '{{dep.dep_name}}')">删除</a>
+                       <!-- <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation1({{department.id}})">删除</a>-->
+                        <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation({{department.id}}, '{{department.dep_name}}')">删除</a>
+                        <a class="btn btn-primary btn-xs" href="#" onClick="delete_department({{ department.id }});">Delete</a>
+
                     </td>
                 </tr>
                {% endfor %}
@@ -145,3 +148,50 @@ function showDeleteConfirmation(dep_id, dep_name) {
 </body>
 
 </html>
+<script>
+function showDeleteConfirmation1(dep_id) {
+if (confirm('您确定要删除吗？')) {
+    $.ajax({
+        url: '/dep_del/?del_id=' + dep_id,
+        success: function(response) {
+            if (response.status == 'success') {
+                toastr.success(response.message);
+                // Remove the deleted department element from the list
+                $('#dep_' + dep_id).remove();
+            } else {
+                toastr.error(response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            toastr.error('删除失败，请稍后再试。');
+        }
+    });
+}
+</script>
+<script>
+function delete_department(department_id) {
+    // 发送 Ajax 请求，删除指定部门
+    $.ajax({
+        url: "/delete_department/",
+        type: "POST",
+        dataType: "json",
+        data: {
+            'department_id': department_id,
+             'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                // 删除成功，刷新列表
+                location.reload();
+            } else {
+                // 处理删除失败的情况
+                alert("删除部门失败！");
+            }
+        },
+        error: function(xhr,errmsg,err) {
+            // 处理 Ajax 请求错误的情况
+            alert("Ajax error!");
+        }
+    });
+}
+</script>

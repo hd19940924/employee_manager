@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+</head>
+<body>
+<script rel="script" src="{% static 'js/jquery-3.2.1.js' %}"></script>
+<script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'%}"></script>
+<script rel="script" src='{% static "js/toastr.min.js" %}'></script>
+<script type="text/javascript"src="http://code.jquery.com/jquery-1.4.1.min.js"></script>
+<script>
+function delete_department(id) {
+
+    // 发送删除请求
+    $.ajax({
+        type: 'DELETE',
+        url: '/department/' + id + '/delete/'
+        data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            // 如果响应状态为成功，则删除相应的行
+            if (response.status === 'success') {
+                $('#department_' + id).remove();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+}
+</script>
+<script>
+
+$(document).on('click', '.delete-department', function() {
+
+    // 获取当前点击按钮对应的部门 ID
+    var department_id = $(this).data('department-id');
+
+    // 发送 Ajax 请求
+    $.ajax({
+        url: url: '/delete_department/' + department_id + '/',
+        type: 'GET',
+
+        success: function(response) {
+            if (response.success) {
+                // 删除成功，更新部门列表
+                $('#department-list').load('/department_list/');
+
+            } else {
+                // 处理删除失败的情况
+            }
+        }
+    })
+});
+</script>
+<table>
+    <thead>
+        <tr>
+            <th>部门ID</th>
+            <th>部门名称</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for department in departments %}
+            <tr id="department_{{ department.id }}">
+                <td>{{ department.id }}</td>
+                <td>{{ department.dep_name }}</td>
+                <td>
+                   <a class="btn btn-primary btn-xs" href="#"  onClick="delete_department1({{ department.id }});">Delete</a>
+                    <a class="btn btn-primary btn-xs" href="#" onClick="delete_department({{ department.id }});">Delete</a>
+                    <a class="btn btn-danger btn-xs" href="department/{{ department.id }}/delete/">删除</a>
+                    <button class="delete-department" data-department-id="{{ department.id }}">删除部门</button>
+                    <button  onclick="test()">测试</button>
+                    <button type="button" onclick="alert('欢迎!')">点我!</button>
+                    <a class="btn btn-primary btn-xs" href="#" onClick="delete_department2({{ department.id }}, '{{ department.dep_name}}');">Delete</a>
+                    <a class="btn btn-danger btn-xs" href="#" onClick="showDeleteConfirmation({{ department.id }});">删除</a>
+
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div id="status"></div>
+</body>
+</html>
+<script>
+    function test(){
+    alert("hello")
+    }
+</script>
+<script>
+function delete_department1(department_id) {
+    // 发送 Ajax 请求，删除指定部门
+    $.ajax({
+        url: "/delete_department/" + department_id + "/",
+        type: "POST",
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                // 删除成功，刷新列表
+                location.reload();
+            } else {
+                // 处理删除失败的情况
+                alert("删除部门失败！");
+            }
+        },
+        error: function(xhr,errmsg,err) {
+            // 处理 Ajax 请求错误的情况
+            alert("Ajax error!");
+        }
+    });
+}</script>
+<script>
+function delete_department2(department_id,dep_name) {
+    // 发送 Ajax 请求，删除指定部门
+  if (confirm('您确定要删除吗？')) {
+    $.ajax({
+        url: "/delete_department/",
+        type: "POST",
+        dataType: "json",
+        data: {
+            'department_id': department_id,
+             'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                // 删除成功，刷新列表
+                toastr.options.positionClass = 'toast-top-center';
+                toastr.success(dep_name + ' 已被成功删除！');
+                location.reload();
+                $("#status").html("删除成功！");
+
+            } else {
+                // 处理删除失败的情况
+                alert("删除部门失败！");
+            }
+        },
+        error: function(xhr,errmsg,err) {
+            // 处理 Ajax 请求错误的情况
+            alert("Ajax error!");
+        }
+    });
+    }
+   else{
+        toastr.options.positionClass = 'toast-top-center';
+        toastr.error('取消删除 '+ dep_name + '！' );
+    }
+}
+</script>
+<script>
+function showDeleteConfirmation(department_id) {
+if (confirm('您确定要删除吗？')) {
+    $.ajax({
+        url: '/dep_del/?del_id=' + department_id,
+        type: "GET",
+        success: function(response) {
+            if (response.status == 'success') {
+                toastr.success(response.message);
+                // Remove the deleted department element from the list
+                $('#dep_' + department_id).remove();
+            } else {
+                toastr.error(response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            toastr.error('删除失败，请稍后再试。');
+        }
+    });
+}
+    </script>

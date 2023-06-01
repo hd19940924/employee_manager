@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from em_web import views
 from em_web.views import my_NewView
 app_name='em_web'
@@ -53,6 +53,12 @@ urlpatterns = [
     #path('delete_department/<int:department_id>/', views.delete_department, name='delete_department'),
     path('delete_department/<int:department_id>/', views.delete_department, name='delete_department'),
     path('delete_department/', views.delete_department1, name='delete_department'),
+    path("login1/",views.login1),
+    re_path('^ajax/', views.ajax_test),
+    re_path('^pro/', views.product),
+    path("index_new/",views.index_new),
+    path("index_json/",views.index_json),
+    path('login_new_ajax/', views.login_new_ajax),
 ]
 
 
