@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+     <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+</head>
+<body>
+<script rel="script" src="{% static 'js/jquery-3.2.1.js' %}"></script>
+<script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'%}"></script>
+<script rel="script" src='{% static "js/toastr.min.js" %}'></script>
+<script type="text/javascript"src="http://code.jquery.com/jquery-1.4.1.min.js"></script>
+
+<input type="number" class="form-control text-center" id="a1">
+<p class="text-center">x</p>
+<input type="number" class="form-control text-center" id="a2">
+<p class="text-center">=</p>
+<input type="number" class="form-control text-center" id="a3">
+<button class="btn btn-warning btn-block">计算</button>
+
+<script>
+    // 设置点击事件
+    $('.btn').click(function (){
+        // 朝后端发送ajax请求
+        $.ajax({
+            // 指定后端地址,不指定则提交到当前地址
+            url:'/pro/',
+            // 指定请求方式,不指定默认get
+            type: "GET",
+            // 需要发送的数据
+            data:{'a1':$('#a1').val(),'a2':$('#a2').val()},
+            // 回调函数:后端返回结果的时候自动触发,并将结果传给args
+            success:function(args){
+                // 通过DOM操作渲染到第三个input内
+                $('#a3').val(args)
+            }
+        })
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+   <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+   <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+</head>
+<body>
+<script rel="script" src="{% static 'js/jquery-3.2.1.js' %}"></script>
+<script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'%}"></script>
+<script rel="script" src='{% static "js/toastr.min.js" %}'></script>
+<script type="text/javascript"src="http://code.jquery.com/jquery-1.4.1.min.js"></script>
+{% csrf_token %}
+
+<input type="text" id="i1">
++
+<input type="text" id="i2">
++
+<input type="text" id="i3">
+<button id="d1">按钮</button>
+
+<script>
+var csrftoken = $("[name='csrfmiddlewaretoken']").val();
+  $("#d1").click(function(){
+      $.ajax({
+          url: "/index_json/",
+          type: "POST",
+          contentType: "applation/json",
+          data: JSON.stringify({ "i1": $("#i1").val(), "i2": $("#i2").val(), "csrfmiddlewaretoken": csrftoken }),
+          success: function(data) {
+              $("#i3").val(data);
+          }
+      });
+  });
+</script>
+</body>
+</html>

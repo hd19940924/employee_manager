@@ -34,4 +34,13 @@ class Person(models.Model):
     age=models.IntegerField(verbose_name='年龄')
     # 成绩 float类型
     score = models.FloatField(verbose_name='成绩')
+from django.db import models
+
+class LoginUser(models.Model):
+    name = models.CharField(max_length=16,verbose_name='用户名')
+    pwd = models.CharField(max_length=16,verbose_name='密码')
+
+    def __str__(self):
+        return self.name
+
 

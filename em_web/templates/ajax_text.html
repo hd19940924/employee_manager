@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+   <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+</head>
+<body>
+<script rel="script" src="{% static 'js/jquery-3.2.1.js' %}"></script>
+<script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'%}"></script>
+<script rel="script" src='{% static "js/toastr.min.js" %}'></script>
+<script type="text/javascript"src="http://code.jquery.com/jquery-1.4.1.min.js"></script>
+<h1>ajax</h1>
+<form action="" method="post">
+    {% csrf_token %}
+    <div>
+        用户名：<input type="text" name="username" id="username">
+    </div>
+    <div>
+        密码：<input type="password" name="password" id="password">
+    </div>
+    <div>
+        <input type="button" id="btn" value="确认">
+        <!--{# <input type="submit" id="btn" value="确认">#}-->
+    </div>
+    <span style="color: red;font-size: 16px" id="error"></span>  <!--#增加一个标签，后端传递过来的信息添加到这里来-->
+</form>
+
+<script>
+    $('#btn').click(function () {
+        var currentUrl = window.location.href;
+        $.ajax({
+            type:'post',
+            url: "/login1/",
+            data:{
+                uname:$('#username').val(),
+                pwd:$('#password').val(),
+                csrfmiddlewaretoken:$('[name=csrfmiddlewaretoken]').val(),
+            },
+            success:function (res) {
+                var res_Str = JSON.parse(res);
+                console.log(res_Str,typeof res_Str);
+                if(res_Str['code'] === 0){
+                    location.href=res_Str['success']
+                }else if(res_Str['code'] === 1){
+                    $('span').text(res_Str['fail'])  #给span标签设置值
+                }
+            }
+        })
+    })
+
+</script>
+</body>
+</html>

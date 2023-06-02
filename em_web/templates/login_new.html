@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+   <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+</head>
+<body>
+<script rel="script" src="{% static 'js/jquery-3.2.1.js' %}"></script>
+<script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'%}"></script>
+<script rel="script" src='{% static "js/toastr.min.js" %}'></script>
+<script type="text/javascript"src="http://code.jquery.com/jquery-1.4.1.min.js"></script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-info">
+              <div class="panel-heading">用户登入</div>
+                  <div class="panel-body">
+                      <form action="">
+                          用户名:
+                          <input type="text" class="form-control" id="a1">
+                           密码:
+                          <input type="password" class="form-control" id="a2">
+                          <br>
+                          <input type="button" class="btn btn-warning btn-block" value="登入">
+                          <p class="aa" style="color: red"></p>{# 设置一个标签用来展示用户登入状态信息 #}
+                      </form>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.btn').click(function () {
+        $.ajax({
+            url:'/login_new_ajax/',
+            type: "POST",
+            data:{'name':$('#a1').val(),'pwd':$('#a2').val()},
+            success:function (data) {
+                // 方式二 : 加一行,将json格式字符串转成字典
+                // data = JSON.parse(data)
+
+                // 状态码为200则表示登入成功
+                if (data.status === 200){
+                    // 前端进行网页跳转
+                    location.href='https://996.baduhefei.com/index.html'
+                }else {
+                    // 登入失败则使用DOM操作渲染msg
+                    $('.aa').html(data.msg)
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>
+
