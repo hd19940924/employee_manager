@@ -322,3 +322,5 @@ def login_new_ajax(request):
         # import json
         # return HttpResponse(json.dumps(dic))
     return render(request,'login_new.html')  # get请求展示login页面
+def layer(request):
+    return render(request,"layer_text.html")

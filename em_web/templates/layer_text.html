@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button type="button" class="btn btn-danger" onclick="doDel()">删除</button>
+<script type="text/javascript" src='{% static "layer-v3.5.1/layer-v3.5.1/layer/layer.js" %}'></script>
+<script rel="script" src="{% static 'js/jquery-3.2.1.js' %}"></script>
+<script rel="script" src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.js'%}"></script>
+<script rel="script" src='{% static "js/toastr.min.js" %}'></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.1.min.js"></script>
+<script type="text/javascript" src='{% static "layer-v3.5.1/layer-v3.5.1/layer/layer.js" %}'></script>
+<script>
+        //自定义执行信息删除提示判断，参数uu是成功的删除url地址
+        function doDel() {
+            layer.confirm('是否要删除？', {
+                btn: ['确定', '取消']
+                // 按钮
+            }, function () {
+                //网页跳转
+                window.location ="/login/";
+
+            });
+        }
+</script>
+</body>
+</html>

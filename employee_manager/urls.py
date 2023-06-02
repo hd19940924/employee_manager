@@ -59,6 +59,7 @@ urlpatterns = [
     path("index_new/",views.index_new),
     path("index_json/",views.index_json),
     path('login_new_ajax/', views.login_new_ajax),
+    path("layer_test/",views.layer),
 ]
 
 
