@@ -324,3 +324,86 @@ def login_new_ajax(request):
     return render(request,'login_new.html')  # get请求展示login页面
 def layer(request):
     return render(request,"layer_text.html")
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
+import random
+def check_code(width=120, height=30, char_length=5, font_file=r'C:\Users\admin\employee_manager\em_web\static\fonts\kumo.ttf', font_size=28):
+    code = []
+    img = Image.new(mode='RGB', size=(width, height), color=(255, 255, 255))
+    draw = ImageDraw.Draw(img, mode='RGB')
+
+    def rndChar():
+        """
+        生成随机字母
+        :return:
+        """
+        return chr(random.randint(65, 90))
+
+    def rndColor():
+        """
+        生成随机颜色
+        :return:
+        """
+        return (random.randint(0, 255), random.randint(10, 255), random.randint(64, 255))
+
+    # 写文字
+    font = ImageFont.truetype(font_file, font_size)
+    for i in range(char_length):
+        char = rndChar()
+        code.append(char)
+        h = random.randint(0, 4)
+        draw.text([i * width / char_length, h], char, font=font, fill=rndColor())
+
+    # 写干扰点
+    for i in range(40):
+        draw.point([random.randint(0, width), random.randint(0, height)], fill=rndColor())
+
+    # 写干扰圆圈
+    for i in range(40):
+        draw.point([random.randint(0, width), random.randint(0, height)], fill=rndColor())
+        x = random.randint(0, width)
+        y = random.randint(0, height)
+        draw.arc((x, y, x + 4, y + 4), 0, 90, fill=rndColor())
+
+    # 画干扰线
+    for i in range(5):
+        x1 = random.randint(0, width)
+        y1 = random.randint(0, height)
+        x2 = random.randint(0, width)
+        y2 = random.randint(0, height)
+
+        draw.line((x1, y1, x2, y2), fill=rndColor())
+
+    img = img.filter(ImageFilter.EDGE_ENHANCE_MORE)
+    return img, ''.join(code)
+
+from io import BytesIO
+
+def image_code(request):
+
+    ''' 生成图片验证码 '''
+    img, code_string = check_code()
+    # 写入到自己的session中（以便后续获取验证码在进行校验）
+    request.session['image_code'] = code_string
+    # 给session设置60s超时
+    print(code_string)
+    request.session.set_expiry(60)
+    # print(code_string)
+    stream = BytesIO()
+    img.save(stream, 'png')
+    return HttpResponse(stream.getvalue())
+@csrf_exempt
+def login_index(request):
+    if request.method=="GET":
+
+       return render(request,"login_index.html")
+    elif request.method=="POST":
+        username=request.POST.get("username")
+        password=request.POST.get("password")
+        verify_code=request.POST.get("code")
+        print(verify_code)
+        print(request.POST)
+        code=request.session.get("image_code")
+        if (username=="admin" and password=="123456" and verify_code==code):
+            return HttpResponse("登录成功！！！")
+        #return render(request,"login_index.html")
+        return HttpResponse("用户名密码或验证码有误！！！")
