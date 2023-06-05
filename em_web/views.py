@@ -407,3 +407,26 @@ def login_index(request):
             return HttpResponse("登录成功！！！")
         #return render(request,"login_index.html")
         return HttpResponse("用户名密码或验证码有误！！！")
+def layerTest(request):
+    return render(request,"layerTest.html")
+def formTest(request):
+    return render(request,"formTest.html")
+from django.shortcuts import render
+from em_web.models import User
+@csrf_exempt
+def sumbit(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        age = request.POST.get('age')
+        user = User(name=name, email=email, age=age)
+        user.save()
+        Users=models.User.objects.all()
+        #return HttpResponse("添加成功！")
+        return render(request,"User_list.html")
+        return redirect("/User_list/")
+    else:
+        return render(request, 'formTest.html')
+def user_list(request):
+    Users = models.User.objects.all()
+    return render(request,"User_list.html",{"Users":Users})

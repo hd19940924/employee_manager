@@ -62,6 +62,10 @@ urlpatterns = [
     path("layer_test/",views.layer),
     path("image/code/",views.image_code),
     path("login_index/",views.login_index),
+    path("layerTest/",views.layerTest),
+    path("formTest/",views.formTest),
+    path("submit/",views.sumbit),
+    path("User_list/",views.user_list),
 ]
 
 
