@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'em_web.apps.EmWebConfig',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -48,8 +49,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
-
+DEBUG_TOOLBAR_PANELS = [
+   'debug_toolbar.panels.cache.CachePanel',
+   # ...
+]
 ROOT_URLCONF = 'employee_manager.urls'
 
 TEMPLATES = [
@@ -147,3 +152,18 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# django-redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+          'TIMEOUT': 30,  # 将键的默认过期时间设置为 0.5 分钟
+    },
+}
+
+# session settings
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"

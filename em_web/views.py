@@ -326,7 +326,7 @@ def layer(request):
     return render(request,"layer_text.html")
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import random
-def check_code(width=120, height=30, char_length=5, font_file=r'C:\Users\admin\employee_manager\em_web\static\fonts\kumo.ttf', font_size=28):
+def check_code(width=120, height=30, char_length=4, font_file=r'C:\Users\admin\employee_manager\em_web\static\fonts\kumo.ttf', font_size=28):
     code = []
     img = Image.new(mode='RGB', size=(width, height), color=(255, 255, 255))
     draw = ImageDraw.Draw(img, mode='RGB')
@@ -390,11 +390,11 @@ def image_code(request):
     # print(code_string)
     stream = BytesIO()
     img.save(stream, 'png')
+    #print(stream.getvalue())
     return HttpResponse(stream.getvalue())
 @csrf_exempt
 def login_index(request):
     if request.method=="GET":
-
        return render(request,"login_index.html")
     elif request.method=="POST":
         username=request.POST.get("username")
@@ -404,7 +404,8 @@ def login_index(request):
         print(request.POST)
         code=request.session.get("image_code")
         if (username=="admin" and password=="123456" and verify_code==code):
-            return HttpResponse("登录成功！！！")
+            #return HttpResponse("登录成功！！！")
+            return redirect("/boot_demo/")
         #return render(request,"login_index.html")
         return HttpResponse("用户名密码或验证码有误！！！")
 def layerTest(request):
@@ -423,10 +424,62 @@ def sumbit(request):
         user.save()
         Users=models.User.objects.all()
         #return HttpResponse("添加成功！")
-        return render(request,"User_list.html")
+       # return render(request,"User_list.html")
         return redirect("/User_list/")
     else:
         return render(request, 'formTest.html')
 def user_list(request):
+   # key = "my_key"
+    #value = cache.get(key)
     Users = models.User.objects.all()
     return render(request,"User_list.html",{"Users":Users})
+def boot_demo(request):
+    return render(request,"boot_demo.html")
+from django.core.cache import cache
+import redis
+
+# 在 Django 的 settings.py 中配置 Redis 的连接信息
+redis_instance = redis.Redis(host='localhost', port=6379)
+
+# 定义一个函数，将传递的键值对存储到 Redis 中
+def set_key(request):
+    key = request.GET.get('key')
+    value = request.GET.get('value')
+    if key and value:
+        redis_instance.set(key, value)
+        return HttpResponse('key value pair set successfully')
+    else:
+        return HttpResponse('key and value parameters required')
+
+# 定义一个函数，从 Redis 中获取指定键的值
+def get_key(request):
+    key = request.GET.get('key')
+    if key:
+        value = redis_instance.get(key)
+        if value:
+            return HttpResponse(value)
+        else:
+            return HttpResponse('key does not exist')
+    else:
+        return HttpResponse('key parameter required')
+
+# 在 Django views 中引用上述函数
+def example_view(request):
+    # 调用 set_key 函数将键值对存储到 Redis 中
+    set_key(request)
+
+    # 调用 get_key 函数从 Redis 获取指定键的值
+    value = get_key(request)
+
+    # 渲染模板并返回响应
+    return render(request, 'example_template.html', {'value': value})
+def my_view_redis(request):
+    #cache.set('key1', 'Hello, Redis!')
+    key = "my_key"
+    value = cache.get(key)
+    print(value)
+    if value is None:
+     value = models.User.objects.all()
+      #print(value)
+     cache.set(key, value,timeout=30)
+    return render(request, "User.html", {"User_list": value})

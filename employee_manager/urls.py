@@ -66,7 +66,10 @@ urlpatterns = [
     path("formTest/",views.formTest),
     path("submit/",views.sumbit),
     path("User_list/",views.user_list),
+    path("boot_demo/",views.boot_demo),
+    path("my_view_redis/",views.my_view_redis),
 ]
+
 
 
 

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+     <meta charset="UTF-8">
+	<title>Bootstrap 弹出框表单示例</title>
+	<!-- 引入 Bootstrap 样式 -->
+	<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css">
+	<!-- 引入 Bootstrap JavaScript -->
+	<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.0.2/js/bootstrap.min.js"></script>
+	<!-- 引入 jQuery -->
+	<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  弹出框表单示例
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">新增用户</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="form-container">
+        <!-- 表单内容 -->
+        <form>
+		  <div class="form-group">
+		    <label for="username">用户名</label>
+		    <input type="text" class="form-control" id="username"  name="name" placeholder="请输入用户名">
+		  </div>
+		  <div class="form-group">
+		    <label for="email"> 邮箱</label>
+		    <input type="text" class="form-control" id="email" name="email" placeholder="请输入邮箱">
+		  </div>
+         <div class="form-group">
+		   <label for="age">年龄</label>
+		    <input type="text" class="form-control" id="age" name="age" placeholder="请输入年龄">
+		  </div>
+		</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="submit-btn">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+   // 新增提交按钮的点击事件监听
+  $('#submit-btn').on('click', function () {
+    // 获取表单数据
+    var formData = $('#form-container form').serialize();
+    console.log(formData);
+
+    // 发送数据到服务器
+    $.ajax({
+      type: 'POST',//请求类型
+      url: '/submit/',
+      data: formData,
+      success: function (data) {
+        console.log(data);
+        //layer.close(formIndex);
+         $('#exampleModal').modal('hide');
+        //window.location.reload();//本地刷新
+      },
+      error: function (error) {
+        console.error(error);
+      }
+    });
+  });
+</script>
+</body>
+</html>
