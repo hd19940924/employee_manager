@@ -183,11 +183,15 @@ def emp_list_search(request):
         return render(request, "emp_list.html", {"emp_queryset": all_emp_data, 'page_sizes': [2, 5, 10],}) # 定义可选的每页条数})
     else:
         all_emp_data = models.Employee.objects.filter(name__contains=search)
+        page_size = request.GET.get('per_page') or 2  # 默认每页显示2条
+        paginator = Paginator(all_emp_data, page_size)
+        page = request.GET.get('page')
+        all_emp_data = paginator.get_page(page)
         for emp in all_emp_data:
             emp.create_time = emp.create_time.strftime("%Y-%m-%d")
             emp.gender = emp.get_gender_display()
             emp.dep_id = models.Department.objects.filter(id=emp.dep_id).first()
-        return render(request, "emp_list.html", {"emp_queryset": all_emp_data})
+        return render(request, "emp_list.html", {"emp_queryset": all_emp_data,"search":search,'page_sizes': [2, 5, 10]})
 from django.utils import timezone
 @login_required
 def emp_update(request):
@@ -584,3 +588,32 @@ redis_conn = redis.StrictRedis(host='localhost', port=6379, db=0)
 def my_view(request):
     # 视图函数的代码
     return HttpResponse('Hello, world!')
+from django.http import FileResponse
+import os
+
+def download_file(request):
+    # 获取要下载的文件的路径
+    file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'media/example.txt')
+    # 打开文件并读取它的内容
+    with open(file_path, mode='r', encoding='utf-8') as f:
+        file_content = f.read()
+    response = HttpResponse(file_content, content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="example.txt"'
+    return response
+import csv
+
+def download_employees(request):
+    employees = models.Employee.objects.all()
+
+    # 将查询集的数据转换为 CSV 格式的文本数据
+    response_text = '\ufeff' + '\n'.join([
+        ','.join(["员工ID","员工姓名","员工密码","员工年龄","账户余额","入职时间","员工性别","所属部门"])  # CSV 表头
+    ] + [
+        ','.join([str(employee.id), employee.name, str(employee.age),str(employee.account),str(employee.create_time), str(employee.gender),employee.dep])  # CSV 行数据
+        for employee in employees
+    ])
+
+    # 创建响应对象
+    response = HttpResponse(response_text, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="employees.csv"'
+    return response

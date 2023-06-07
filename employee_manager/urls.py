@@ -71,6 +71,8 @@ urlpatterns = [
     path("User_list/",views.user_list),
     path("boot_demo/",views.boot_demo),
     path("my_view_redis/",views.my_view_redis),
+    path('download/', views.download_file),
+    path("download_employees/",views.download_employees),
 ]
 
 

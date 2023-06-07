@@ -50,11 +50,18 @@
             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             新增员工
         </a>
+        <a href="http://127.0.0.1:8000/download/" download>
+  <button>下载示例文件</button>
+</a>
+              <a href="http://127.0.0.1:8000/download_employees/" download>
+  <button>下载文件</button>
+</a>
+
          <div style="float: right; width: 300px">
     <form method="get" action="">
         <div class="input-group">
             <label for="search"></label>
-            <input type="text" id="search" name="search" class="form-control" placeholder="请输入员工名称 支持模糊查询">
+            <input type="text" id="search" name="search" class="form-control" placeholder="请输入员工名称 支持模糊查询" value="{{search}}">
             <span class="input-group-btn">
                 <button class="btn btn-default" type="submit">
                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
