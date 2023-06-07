@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>员工管理</title>
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
 </head>
 <body>
@@ -46,7 +46,7 @@
 
 <div class="container">
     <div style="margin-bottom: 10px">
-        <a class="btn btn-success" href="/dep_add/" target="_blank">
+        <a class="btn btn-success" href="/emp_add/" target="_blank">
             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             新增员工
         </a>
@@ -96,8 +96,8 @@
                     <td>{{emp.gender}}</td>
                     <td>{{emp.dep_id}}</td>
                     <td>
-                        <a class="btn btn-primary btn-xs" href="/dep_update/?update_id={{ dep.id}}">编辑</a>
-                        <a class="btn btn-danger btn-xs" href="/dep_del/?del_id={{dep.id}}">删除</a>
+                        <a class="btn btn-primary btn-xs" href="/emp_update/?update_id={{ emp.id}}">编辑</a>
+                        <a class="btn btn-danger btn-xs" href="/emp_del/?del_id={{emp.id}}">删除</a>
                     </td>
                 </tr>
                {% endfor %}

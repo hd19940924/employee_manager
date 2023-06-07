@@ -20,6 +20,7 @@ class Employee(models.Model):
     )
     gender= models.SmallIntegerField(verbose_name="员工性别",choices=gender_choices)
     dep=models.ForeignKey(to="Department",to_field="id",related_name='employees',on_delete=models.CASCADE)
+
 class detection_collect(models.Model):
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=30, null=True)

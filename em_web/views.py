@@ -1,5 +1,7 @@
 import datetime
 from datetime import datetime
+from time import timezone
+
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib import  messages
@@ -97,6 +99,45 @@ def dep_del(request):
     #messages.success(request,' 已被成功删除！')
     return  redirect("/dep_list/")
 @login_required
+def emp_del(request):
+    del_id=request.GET.get("del_id")
+    models.Employee.objects.filter(id=del_id).delete()
+    return redirect("/emp_list/")
+@login_required
+def emp_add(request):
+    if request.method=="GET":
+       emp_list = models.Employee.objects.all()
+       gender=[]
+       for emp in emp_list:
+           emp_gender=emp.get_gender_display()
+           print(emp_gender)
+           gender.append(emp_gender)
+       print(gender)
+       print(emp_list.first().get_gender_display())
+       departmnets=models.Department.objects.all()
+       choices = models.Employee.gender_choices
+       return render(request,"emp_add.html",{'choices': choices,"departments":departmnets})
+    #elif request.method=="POST":
+    if request.method == 'POST':
+        name = request.POST.get('emp_name')
+        password = request.POST.get('emp_password')
+        age = request.POST.get('age')
+        account = request.POST.get('account')
+        create_time = request.POST.get('create_time')
+        gender = request.POST.get('gender')
+        dep_id = request.POST.get('department')
+        models.Employee.objects.create(
+            name=name,
+            password=password,
+            age=age,
+            account=account,
+            create_time=create_time,
+            gender=gender,
+            dep_id=dep_id
+        )
+        return redirect("/emp_list/")
+
+@login_required
 def dep_update(request):
     update_dep_id= None
     if request.method=="GET":
@@ -106,11 +147,12 @@ def dep_update(request):
         return render(request,"dep_update.html",{
             "default_dep":default_dep
         })
-    elif request.method =="POST":
+    if request.method =="POST":
         new_dep_id = request.POST.get("new_dep_id")
         new_dep_name= request.POST.get("new_dep_name")
         models.Department.objects.filter(id=new_dep_id).update(dep_name=new_dep_name)
         return redirect("/dep_list/")
+
 @login_required
 def emp_list(request):
     all_emp_data=models.Employee.objects.all()
@@ -130,7 +172,7 @@ def emp_list_search(request):
         # print(request.user.is_authenticated())
 
         all_emp_data = models.Employee.objects.all().order_by('-create_time')
-        page_size = request.GET.get('per_page') or 10  # 默认每页显示2条
+        page_size = request.GET.get('per_page') or 2  # 默认每页显示2条
         paginator = Paginator(all_emp_data, page_size)
         page = request.GET.get('page')
         all_emp_data=paginator.get_page(page)
@@ -146,6 +188,55 @@ def emp_list_search(request):
             emp.gender = emp.get_gender_display()
             emp.dep_id = models.Department.objects.filter(id=emp.dep_id).first()
         return render(request, "emp_list.html", {"emp_queryset": all_emp_data})
+from django.utils import timezone
+@login_required
+def emp_update(request):
+   # update_emp_id = None
+    if request.method == "GET":
+        update_emp_id = request.GET.get("update_id")
+        #default_emp = models.Employee.objects.filter(id=update_emp_id).first()
+       # print(default_emp)
+      #  print(default_emp.id)
+        employee = models.Employee.objects.get(id=update_emp_id)
+        departments = models.Department.objects.all()
+        #gender_choices = models.Employee.GENDER_CHOICES
+        emp = models.Employee.objects.filter(id=update_emp_id).first()
+        print(emp.dep_id)
+        emp_dep_id=emp.dep_id
+        gender = emp.get_gender_display()
+        # 将 create_time 格式化为年月日格式，并转换为与前端页面相同时区的日期
+        create_time = timezone.localtime(emp.create_time).strftime("%Y-%m-%d")
+        create_time = timezone.localtime(emp.create_time).strftime("%Y-%m-%d")
+        print(gender)
+        gender_id=emp.gender
+        print(gender_id)
+        #departments = models.Department.objects.all()
+        department = emp.dep
+        print(department)
+        gender_choices = models.Employee.gender_choices
+        return render(request,"emp_update.html",{"default_emp_id":update_emp_id,"emp":emp,"emp_dep_id": emp_dep_id,"departments": departments, "gender_choices": gender_choices, "selected_dep": department, "selected_gender": gender,"gender_id":gender_id})
+    if request.method=="POST":
+        update_emp_id = request.POST.get("update_id")
+       # emp = models.Employee.objects.filter(id=update_emp_id).first()
+        print(update_emp_id)
+        name = request.POST.get('emp_name')
+        password = request.POST.get('emp_password')
+        age = request.POST.get('age')
+        account = request.POST.get('account')
+        create_time = request.POST.get('create_time')
+        gender = request.POST.get('gender')
+       # gender_id=emp.gender
+        dep_id = request.POST.get('department')
+        models.Employee.objects.filter(id=update_emp_id).update( name=name,
+            password=password,
+            age=age,
+            account=account,
+            create_time=create_time,
+            gender=gender,
+            dep_id=dep_id)
+        return redirect("/emp_list/")
+
+
 def china(request):
     return render(request,"china.html")
 def world(request):
@@ -483,3 +574,13 @@ def my_view_redis(request):
       #print(value)
      cache.set(key, value,timeout=30)
     return render(request, "User.html", {"User_list": value})
+from django.views.decorators.cache import cache_page
+import redis
+
+# 获取Redis连接
+redis_conn = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+@cache_page(60 * 15)  # 缓存 15 分钟
+def my_view(request):
+    # 视图函数的代码
+    return HttpResponse('Hello, world!')
