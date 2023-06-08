@@ -73,6 +73,12 @@ urlpatterns = [
     path("my_view_redis/",views.my_view_redis),
     path('download/', views.download_file),
     path("download_employees/",views.download_employees),
+    path("upload_file/",views.upload_file),
+    path("import/",views.import_file),
+    path("test/",views.test),
+    path("download_dep/",views.download_dep_file),
+    path("download_departments/",views.download_departments),
+    path("upload_department_file/",views.upload_department_file)
 ]
 
 

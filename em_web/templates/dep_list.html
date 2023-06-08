@@ -82,6 +82,12 @@ function showDeleteConfirmation(dep_id, dep_name) {
             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             新建部门
         </a>
+          <a href="http://127.0.0.1:8000/download_dep/" download>
+  <button style="">下载模板文件</button>
+</a>
+        <a href="http://127.0.0.1:8000/download_departments/" download>
+  <button>导出部门数据</button></a>
+
         <div style="float: right; width: 300px">
     <form method="get" action="">
         <div class="input-group">
@@ -95,6 +101,13 @@ function showDeleteConfirmation(dep_id, dep_name) {
         </div>
     </form>
 </div>
+            <div style="margin-bottom:50px " >
+ <form method="POST" enctype="multipart/form-data" action="/upload_department_file/">
+  {% csrf_token %}
+  <input type="file" name="file" style="display: inline-block;">
+  <button type="submit" style="display: inline-block; margin-top: 20px;">导入</button>
+</form>
+    </div>
     </div>
     <div class="panel panel-default">
             <div class="panel-heading">
@@ -115,7 +128,7 @@ function showDeleteConfirmation(dep_id, dep_name) {
                 <tr>
                     <td>{{dep.id}}</td>
                     <td>{{dep.dep_name}}</td>
-                    <td></td>
+                    <td>{{dep.employee_count}}</td>
                     <td>
                         <a class="btn btn-primary btn-xs" href="/dep_update/?update_id={{ dep.id}}">编辑</a>
                        <!-- <a class="btn btn-danger btn-xs" href="/dep_del/?del_id={{dep.id}}">删除</a>-->

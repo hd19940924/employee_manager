@@ -160,6 +160,7 @@ def emp_list(request):
         emp.create_time=emp.create_time.strftime("%Y-%m-%d")
         emp.gender=emp.get_gender_display()
         emp.dep_id=models.Department.objects.filter(id=emp.dep_id).first()
+
     #all_emp_data=all_emp_data.order_by("age")
 
     return render(request,"emp_list.html",{"emp_queryset":all_emp_data})
@@ -191,6 +192,7 @@ def emp_list_search(request):
             emp.create_time = emp.create_time.strftime("%Y-%m-%d")
             emp.gender = emp.get_gender_display()
             emp.dep_id = models.Department.objects.filter(id=emp.dep_id).first()
+
         return render(request, "emp_list.html", {"emp_queryset": all_emp_data,"search":search,'page_sizes': [2, 5, 10]})
 from django.utils import timezone
 @login_required
@@ -591,7 +593,7 @@ def my_view(request):
 from django.http import FileResponse
 import os
 
-def download_file(request):
+"""def download_file(request):
     # 获取要下载的文件的路径
     file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'media/example.txt')
     # 打开文件并读取它的内容
@@ -599,17 +601,29 @@ def download_file(request):
         file_content = f.read()
     response = HttpResponse(file_content, content_type='text/plain; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="example.txt"'
+    return response"""
+def download_file(request):
+    # 获取要下载的文件的路径
+    file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'media/employees.csv')
+    # 打开文件并读取它的内容
+    with open(file_path, mode='r', encoding='gbk') as f:
+        file_content = f.read()
+    response = HttpResponse(file_content, content_type='text/csv; charset=gbk')
+    response['Content-Disposition'] = 'attachment; filename="employees.csv"'
     return response
 import csv
 
+
 def download_employees(request):
     employees = models.Employee.objects.all()
+    print(employees[0].dep)
+    print(type(employees[0].dep))
 
     # 将查询集的数据转换为 CSV 格式的文本数据
     response_text = '\ufeff' + '\n'.join([
         ','.join(["员工ID","员工姓名","员工密码","员工年龄","账户余额","入职时间","员工性别","所属部门"])  # CSV 表头
     ] + [
-        ','.join([str(employee.id), employee.name, str(employee.age),str(employee.account),str(employee.create_time), str(employee.gender),employee.dep])  # CSV 行数据
+        ','.join([str(employee.id), employee.name, str(employee.password),str(employee.age),str(employee.account),str(employee.create_time), str(employee.get_gender_display()),str(employee.dep)])  # CSV 行数据
         for employee in employees
     ])
 
@@ -617,3 +631,105 @@ def download_employees(request):
     response = HttpResponse(response_text, content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="employees.csv"'
     return response
+
+
+import csv
+from io import TextIOWrapper
+from datetime import datetime
+
+from django.shortcuts import render
+from .models import Employee
+
+from datetime import datetime
+def upload_file(request):
+    if request.method == 'POST' and request.FILES['file']:
+        csv_file = TextIOWrapper(request.FILES['file'].file, encoding=request.encoding)
+        reader = csv.DictReader(csv_file)
+        input_format = '%Y/%m/%d'
+        output_format = '%Y-%m-%d'
+
+        # 解析日期字符串并重新格式化日期
+        old_date_str = '2023/1/2'
+        old_date = datetime.strptime(old_date_str, input_format)
+        new_date_str = datetime.strftime(old_date, output_format)
+        from django.utils import timezone
+        print(new_date_str)  # 输出：'2023-01-02'
+        dep_list = models.Department.objects.all()
+        deps = {}
+        for dep in dep_list:
+            # print(dep.dep_name)
+            print({dep.dep_name: dep.id})
+            deps[dep.dep_name] = dep.id
+        print(deps)
+        for row in reader:
+            gender_dict = {'男': 1, '女': 2}
+            gender = gender_dict.get(row['员工性别'])
+            dep_id = deps.get(row['所属部门'])
+            employee = Employee(
+                id=row['员工ID'],  # 将CSV字段映射到模型的字段
+                name=row['员工姓名'],
+                password=row['员工密码'],
+                age=row['员工年龄'],
+                account=row['账户余额'],
+                gender=gender,
+                dep_id=dep_id,
+                create_time=datetime.strptime(row['入职时间'],'%Y-%m-%d %H:%M:%S%z').date()  # 将字符串转换为日期
+            )
+            print(row['入职时间'])
+           # print(Employee.dep)
+            employee.save()
+
+        return redirect("/emp_list_search/")
+    return render(request, 'emp_list.html')
+def import_file(request):
+    return render(request,"import.html")
+def test(request):
+    dep_list=models.Department.objects.all()
+    deps={}
+
+    for dep in dep_list:
+        #print(dep.dep_name)
+        print({dep.dep_name:dep.id})
+        deps[dep.dep_name]=dep.id
+    print(deps)
+
+    print(dep_list)
+    return HttpResponse("jjjjj")
+def download_dep_file(request):
+    # 获取要下载的文件的路径
+    file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'media/departments.csv')
+    # 打开文件并读取它的内容
+    with open(file_path, mode='r', encoding='gbk') as f:
+        file_content = f.read()
+    response = HttpResponse(file_content, content_type='text/csv; charset=gbk')
+    response['Content-Disposition'] = 'attachment; filename="department.csv"'
+    return response
+def download_departments(request):
+    departments = models.Department.objects.all()
+    # 将查询集的数据转换为 CSV 格式的文本数据
+    response_text = '\ufeff' + '\n'.join([
+        ','.join(["部门ID","部门名称","部门人数"])  # CSV 表头
+    ] + [
+        ','.join([str(department.id), str(department.dep_name), str(department.employee_count())])  # CSV 行数据
+        for department in departments
+    ])
+
+    # 创建响应对象
+    response = HttpResponse(response_text, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="departments.csv"'
+    return response
+def upload_department_file(request):
+    if request.method == 'POST' and request.FILES['file']:
+        csv_file = TextIOWrapper(request.FILES['file'].file, encoding=request.encoding)
+        reader = csv.DictReader(csv_file)
+        dep_list = models.Department.objects.all()
+        for row in reader:
+            departmrnt = Department(
+                id=row['部门ID'],  # 将CSV字段映射到模型的字段
+                dep_name=row['部门名称'],
+            )
+           # print(Employee.dep)
+            departmrnt.save()
+
+        return redirect("/dep_list/")
+    return render(request, 'dep_list.html')
