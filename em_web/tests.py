@@ -13,3 +13,7 @@ print(type(payload_new))
 re=requests.request("POST",url,data=payload_new)
 
 print(re.text)
+""" import requests
+    url = "http://127.0.0.1:8000/login/"
+    re=requests.request(method=method,url=url,data=parameter)
+    print(re.text)"""

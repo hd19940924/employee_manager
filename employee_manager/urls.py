@@ -79,7 +79,8 @@ urlpatterns = [
     path("download_dep/",views.download_dep_file),
     path("download_departments/",views.download_departments),
     path("upload_department_file/",views.upload_department_file),
-    path("case_list/",views.case_list)
+    path("case_list/",views.case_list),
+    path("api/",views.api),
 ]
 
 

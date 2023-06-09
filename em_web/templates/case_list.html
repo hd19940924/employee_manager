@@ -114,7 +114,7 @@
                     <td>
                         <a class="btn btn-primary btn-xs" href="/emp_update/?update_id={{ emp.id}}">编辑</a>
                         <a class="btn btn-danger btn-xs" href="/emp_del/?del_id={{emp.id}}">删除</a>
-                        <a class="btn btn-success btn-xs" href="" onclick="run('{{case.remethod}}','{{case.reparameter}}');">运行</a>
+                        <a class="btn btn-success btn-xs" href="" onclick="run('{{case.remethod}}','{{case.reparameter}}',{{case.id}});">运行</a>
                         <button onclick="">运行</button>
                         <!--<a class="btn btn-primary btn-xs" href="#" onClick="delete_department2({{ department.id }}, '{{ department.dep_name}}');">Delete</a>-->
 
@@ -233,23 +233,28 @@ function delete_department1(department_id) {
         }
     });
 }
-function run(method, parameter) {
-    // 发送 AJAX 请求
-    $.ajax({
-        url: '/api',
-        type: method,
-        data: parameter,
-        success: function(response) {
-            // 请求成功，处理响应数据
-            console.log(response);
-            alert('请求成功');
-        },
-        error: function(xhr, textStatus, errorThrown) {
-            // 请求失败，处理错误信息
-            console.error(xhr);
-            alert('请求失败');
-        }
-    });
+function run(method, parameter,id) {
+   // 将方法和参数封装为一个对象
+   var data = {method: method, parameter: parameter,id: id};
+   // 发送 AJAX 请求
+   $.ajax({
+      url: '/api/',
+      type: 'POST',
+      data: JSON.stringify(data),
+      contentType: 'application/json',
+      success: function(response) {
+         // 处理响应数据
+        // console.log(response);
+         alert('请求发送成功');
+         location.reload(true);
+
+      },
+      error: function(xhr, textStatus, errorThrown) {
+         // 处理错误信息
+         console.error(xhr);
+         alert('请求失败');
+      }
+   });
 }
 </script>
 </html>

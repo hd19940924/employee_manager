@@ -2,6 +2,7 @@ import datetime
 from datetime import datetime
 from time import timezone
 
+import requests
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib import  messages
@@ -29,7 +30,8 @@ def login(request):
             #return response
             return  HttpResponse("登录成功")
         messages.error(request, '用户名或密码错误！')
-        return render(request, "login.html", {"error": "用户名或密码错误！"})
+      #  return render(request, "login.html", {"error": "用户名或密码错误！"})
+        return HttpResponse("用户名或密码错误!")
 #@csrf_exempt
 from django.views.decorators.csrf import ensure_csrf_cookie
 @ensure_csrf_cookie
@@ -744,3 +746,40 @@ def upload_department_file(request):
 def case_list(request):
     cases=models.InterfaceCase.objects.all()
     return render(request,"case_list.html",{"cases":cases})
+import requests
+def api(request):
+   if request.method == 'POST':
+    # 读取请求体数据
+      body = request.body.decode('utf-8')
+      data = json.loads(body)
+
+    # 获取方法和参数
+      method = data.get('method')
+      print(method)
+      parameter = data.get('parameter')
+      print(parameter)
+      print(type(parameter))
+      id=data.get("id")
+      print(id)
+      #import requests
+      import requests
+      url = "http://127.0.0.1:8000/login/"
+      re = requests.request(method, url=url, data=json.loads(parameter))
+      print(re.status_code)
+      flag=""
+      if re.text=="登录成功":
+          print("PASS")
+          flag="PASS"
+      else:
+          print("FAIL")
+          flag="FAIL"
+      models.InterfaceCase.objects.filter(id=id).update(acresult=flag)
+   # 调用方法
+      #result = my_function(method, parameter)
+      return HttpResponse("发送成功")
+
+
+
+
+
+
