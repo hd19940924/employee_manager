@@ -11,7 +11,8 @@
 <body>
     <div class="login">
         <h2>登陆\注册</h2>
-        <form method="post" action="/login_new/" >{% csrf_token %}
+        <form method="post" action="/login/" >
+            {% csrf_token %}
         <div class="login_form">
             <span>账号：</span>
             <input type="text" name="username" placeholder="请输入账号">

@@ -24,12 +24,15 @@ def login(request):
         password = request.POST.get("password")
         print(password)
         if (name == "admin" and password == "123456"):
-            response=redirect("/dep_list")
-            response.set_cookie('name', name,max_age=60)
-            return response
-            # return  HttpResponse("登录成功")
+           # response=redirect("/dep_list/")
+            #response.set_cookie('name', name,max_age=60)
+            #return response
+            return  HttpResponse("登录成功")
         messages.error(request, '用户名或密码错误！')
         return render(request, "login.html", {"error": "用户名或密码错误！"})
+#@csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie
+@ensure_csrf_cookie
 def login_new(request):
     if (request.method == "GET"):
         return render(request, "login.html")
@@ -171,9 +174,8 @@ def emp_list_search(request):
     if search == None:
         # print(models.Department)
         # print(request.user.is_authenticated())
-
         all_emp_data = models.Employee.objects.all().order_by('-create_time')
-        page_size = request.GET.get('per_page') or 2  # 默认每页显示2条
+        page_size = request.GET.get('per_page') or 10  # 默认每页显示2条
         paginator = Paginator(all_emp_data, page_size)
         page = request.GET.get('page')
         all_emp_data=paginator.get_page(page)
@@ -306,11 +308,18 @@ def Basic_Line_Chart(request):
     return render(request,"Basic Line Chart.html",{"objs":objs})
 def line_stack(request):
     return render(request,"line-stack.html")
+
 def index(request):
     return render(request, "login.html")
 def logout(request):
     auth.logout(request)
     return redirect("/index")
+from django.views.decorators.cache import cache_page
+import redis
+
+# 获取Redis连接
+redis_conn = redis.StrictRedis(host='localhost', port=6379, db=0)
+@cache_page(60 * 15)  # 缓存 15 分钟
 def index(request):
     return render(request, "login.html")
 def logout(request):
@@ -623,7 +632,7 @@ def download_employees(request):
     response_text = '\ufeff' + '\n'.join([
         ','.join(["员工ID","员工姓名","员工密码","员工年龄","账户余额","入职时间","员工性别","所属部门"])  # CSV 表头
     ] + [
-        ','.join([str(employee.id), employee.name, str(employee.password),str(employee.age),str(employee.account),str(employee.create_time), str(employee.get_gender_display()),str(employee.dep)])  # CSV 行数据
+        ','.join([str(employee.id), employee.name, str(employee.password),str(employee.age),str(employee.account),(str(employee.create_time))[:10], str(employee.get_gender_display()),str(employee.dep)])  # CSV 行数据
         for employee in employees
     ])
 
@@ -728,8 +737,10 @@ def upload_department_file(request):
                 id=row['部门ID'],  # 将CSV字段映射到模型的字段
                 dep_name=row['部门名称'],
             )
-           # print(Employee.dep)
-            departmrnt.save()
+        departmrnt.save()
+        return render(request, 'emp_list.html')
+    return redirect("/emp_list_search/")
 
-        return redirect("/dep_list/")
-    return render(request, 'dep_list.html')
+def case_list(request):
+    cases=models.InterfaceCase.objects.all()
+    return render(request,"case_list.html",{"cases":cases})

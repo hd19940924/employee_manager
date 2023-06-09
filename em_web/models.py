@@ -50,6 +50,17 @@ class User(models.Model):
     name = models.CharField(max_length=20)
     email = models.EmailField(max_length=50)
     age = models.IntegerField()
+class InterfaceCase(models.Model):
+      #casename=models.CharField(max_length=30)
+      casetitle=models.CharField(max_length=30)
+      remethod=models.CharField(max_length=10)
+      reparameter=models.CharField(max_length=300)
+      parametertype=models.CharField(max_length=600)
+      readdr=models.CharField(max_length=30)
+      exresult=models.CharField(max_length=10)
+      acresult=models.CharField(max_length=10,null=True, blank=True)
+
+
 
 
 

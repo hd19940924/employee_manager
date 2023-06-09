@@ -24,7 +24,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li class=""><a href="/dep_list/">部门管理 <span class="sr-only">(current)</span></a></li>
-                <li class="active"><a href="/dep_list/">员工管理 <span class="sr-only">(current)</span></a></li>
+                <li class=""><a href="/emp_list_search/">员工管理 <span class="sr-only">(current)</span></a></li>
                                 <li class="active"><a href="/case_list/">用例管理<span class="sr-only">(current)</span></a></li>
 
                 <li><a href="#">Link</a></li>
@@ -89,31 +89,35 @@
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
-                    <th>员工ID</th>
-                    <th>员工姓名</th>
-                    <th>员工密码</th>
-                    <th>员工年龄</th>
-                    <th>账户余额</th>
-                    <th>入职时间</th>
-                    <th>员工性别</th>
-                    <th>所属部门</th>
+                    <th>用例ID</th>
+                    <th>用例标题</th>
+                    <th>请求方法 </th>
+                    <th>请求参数</th>
+                    <th>参数类型</th>
+                    <th>请求地址 </th>
+                    <th>预期结果</th>
+                    <th>实际结果</th>
                     <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for emp in emp_queryset %}
+                {% for case in cases %}
                 <tr>
-                    <td>{{emp.id}}</td>
-                    <td>{{emp.name}}</td>
-                    <td>{{emp.password}}</td>
-                    <td>{{emp.age}}</td>
-                    <td>{{emp.account}}</td>
-                    <td>{{emp.create_time}}</td>
-                    <td>{{emp.gender}}</td>
-                    <td>{{emp.dep_id}}</td>
+                    <td>{{case.id}}</td>
+                    <td>{{case.casetitle}}</td>
+                    <td>{{case.remethod}}</td>
+                    <td>{{case.reparameter}}</td>
+                    <td>{{case.parametertype}}</td>
+                    <td>{{case.readdr}}</td>
+                    <td>{{case.exresult}}</td>
+                    <td>{{case.acresult}}</td>
                     <td>
                         <a class="btn btn-primary btn-xs" href="/emp_update/?update_id={{ emp.id}}">编辑</a>
                         <a class="btn btn-danger btn-xs" href="/emp_del/?del_id={{emp.id}}">删除</a>
+                        <a class="btn btn-success btn-xs" href="" onclick="run('{{case.remethod}}','{{case.reparameter}}');">运行</a>
+                        <button onclick="">运行</button>
+                        <!--<a class="btn btn-primary btn-xs" href="#" onClick="delete_department2({{ department.id }}, '{{ department.dep_name}}');">Delete</a>-->
+
                     </td>
                 </tr>
                {% endfor %}
@@ -207,4 +211,45 @@
   border: none;
   font-size: 0.9rem;
 }</style>
+<script>
+function delete_department1(department_id) {
+    // 发送 Ajax 请求
+    $.ajax({
+        url: "/delete_department/" + department_id + "/",
+        type: "POST",
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                // 删除成功，刷新列表
+                location.reload();
+            } else {
+                // 处理删除失败的情况
+                alert("删除部门失败！");
+            }
+        },
+        error: function(xhr,errmsg,err) {
+            // 处理 Ajax 请求错误的情况
+            alert("Ajax error!");
+        }
+    });
+}
+function run(method, parameter) {
+    // 发送 AJAX 请求
+    $.ajax({
+        url: '/api',
+        type: method,
+        data: parameter,
+        success: function(response) {
+            // 请求成功，处理响应数据
+            console.log(response);
+            alert('请求成功');
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            // 请求失败，处理错误信息
+            console.error(xhr);
+            alert('请求失败');
+        }
+    });
+}
+</script>
 </html>
